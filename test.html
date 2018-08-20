@@ -1,0 +1,61 @@
+<div class="content" *ngIf="claimSubmission">
+  <app-claim-submission
+    [claim]="claimSubmission"
+    [claimSubmissionRound]="claimSubmissionRound"
+  >
+  </app-claim-submission>
+
+  <div data-test="bundles" *ngFor="let bundle of displayedBundles; trackBy: trackBundle">
+    <ng-container [ngSwitch]="bundle.type">
+
+      <div *ngSwitchCase="'Amendment'">
+        <app-push-toggle
+          [titles]="actionBarTitles"
+          [selectedOption]="actionBarTitles[0]"
+        ></app-push-toggle>
+
+        <app-claim-submission
+          [claim]="bundle"
+          [claimSubmissionRound]="claimSubmissionRound"
+        >
+        </app-claim-submission>
+      </div>
+      <div *ngSwitchCase="'Audit'">
+        <app-push-toggle
+          [titles]="actionBarTitles"
+          [selectedOption]="actionBarTitles[1]"
+        ></app-push-toggle>
+
+        <app-audit
+          [audit]="bundle"
+        >
+        </app-audit>
+      </div>
+    </ng-container>
+  </div>
+  <div *ngIf="claimSubmission.withdrawn">
+    <app-push-toggle
+    data-test="cancel-withdraw"
+    [titles]="actionBarTitles"
+    [selectedOption]="actionBarTitles[2]"
+    (selectedTitleChange)="cancelWithdraw($event)"
+    ></app-push-toggle>
+    <h3>Claim withdrawn</h3>
+    <app-text-input
+      #withdrawnNote
+      expandable="true"
+      title="Why was the claim withdrawn?"
+      data-test="withdrawnNote"
+      [value]="claimSubmission.withdrawnNote"
+      (appDeepBlur)="savePropertyValue('withdrawnNote', withdrawnNote.value)"
+    >
+    </app-text-input>
+  </div>
+  <app-push-toggle
+    *ngIf="!claimSubmission.withdrawn"
+    data-test="add-bundle"
+    [titles]="actionBarTitles"
+    [selectedOption]="null"
+    (selectedTitleChange)="applyClaimAction($event)"
+  ></app-push-toggle>
+</div>
